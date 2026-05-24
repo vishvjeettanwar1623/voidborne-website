@@ -1,0 +1,2153 @@
+/* ============================================================
+   ECLIPSE STUDIOS — INDIE GAME STUDIO WEBSITE
+   Converted from portfolio mockup. All morphing animations preserved.
+   Added gaming accent colors, neon glows, and atmosphere.
+   ============================================================ */
+
+/* ============================================================
+   CINEMATIC INTRO SPLASH ANIMATION
+   ============================================================ */
+
+.intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #050508;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Subtle scanline effect on intro */
+.intro-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 229, 255, 0.015) 2px,
+    rgba(0, 229, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.intro-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1), 
+              opacity 0.8s cubic-bezier(0.76, 0, 0.24, 1),
+              filter 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+  z-index: 2;
+}
+
+.intro-text-line {
+  font-family: "Orbitron", "Bruno Ace SC", sans-serif;
+  font-size: clamp(28px, 5.5vw, 68px);
+  font-weight: 700;
+  letter-spacing: 10px;
+  color: #ffffff;
+  opacity: 0;
+  animation: textFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  text-shadow: 0 0 40px rgba(0, 229, 255, 0.3), 0 0 80px rgba(0, 229, 255, 0.1);
+}
+
+.intro-text-sub {
+  font-family: "Orbitron", "Bruno Ace SC", sans-serif;
+  font-size: clamp(9px, 1.3vw, 13px);
+  font-weight: 400;
+  letter-spacing: 8px;
+  color: #00e5ff;
+  opacity: 0;
+  animation: textFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+}
+
+@keyframes textFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Phase 2: Text shrinks and slides upward out of view */
+.intro-shrink .intro-text-wrapper {
+  transform: scale(0.4) translateY(-120px);
+  opacity: 0;
+  filter: blur(6px);
+}
+
+/* Phase 3: Overlay peels away upward to reveal the site */
+.intro-reveal {
+  animation: overlayReveal 1s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+.intro-reveal .intro-text-wrapper {
+  transform: scale(0.4) translateY(-120px);
+  opacity: 0;
+  filter: blur(6px);
+}
+
+@keyframes overlayReveal {
+  0% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+/* Site hidden while intro plays */
+.site-hidden {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Site reveals after intro finishes */
+.site-revealed {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Bruno Ace SC", sans-serif;
+  /* Dark gaming background with cyan accent ray */
+  background: 
+    radial-gradient(ellipse at 80% 20%, rgba(0, 229, 255, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(120, 0, 255, 0.03) 0%, transparent 50%),
+    linear-gradient(135deg, transparent 55%, rgba(0, 229, 255, 0.08) 70%, rgba(0, 229, 255, 0.03) 85%, transparent 100%),
+    linear-gradient(180deg, #0a0a12 0%, #0d0d1a 50%, #0a0a0f 100%);
+  overflow: hidden;
+}
+
+/* Subtle grid overlay on body for gaming feel */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   PAGE CONTAINER
+   ============================================================ */
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 40px 0;
+  gap: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.page {
+  width: 95vw;
+  max-width: 1320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 2200px;
+}
+
+/* ============================================================
+   MAIN CARD (A4 LANDSCAPE)
+   ============================================================ */
+
+.card {
+  width: 100%;
+  aspect-ratio: 1.38;
+  background-color: #14141f;
+  border-radius: 34px;
+  position: relative;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.6),
+    0 15px 35px rgba(0,0,0,0.4),
+    0 0 60px rgba(0, 229, 255, 0.03);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(0, 229, 255, 0.06);
+}
+
+/* Cinematic Depth Push */
+@keyframes depthPush {
+  0% {
+    transform: scale(1) translateZ(0px);
+    opacity: 1;
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.6),
+      0 15px 35px rgba(0,0,0,0.4);
+  }
+  45% {
+    transform: scale(0.92) translateZ(-80px);
+    opacity: 0.8;
+    box-shadow:
+      0 20px 40px rgba(0,0,0,0.3),
+      0 8px 20px rgba(0,0,0,0.15);
+  }
+  100% {
+    transform: scale(1) translateZ(0px);
+    opacity: 1;
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.6),
+      0 15px 35px rgba(0,0,0,0.4);
+  }
+}
+
+.card-flip {
+  animation: depthPush 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ============================================================
+   TOP PANEL — DARK AREA WITH CUSTOM SHAPE
+   ============================================================ */
+
+.top-panel {
+  position: relative;
+  width: 100%;
+  flex: 0 0 56%;
+  background: #1e1e2e;
+  border-radius: 22px;
+  z-index: 1;
+  transition: 
+    flex-basis 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    border-radius 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+  /* Subtle inner glow for gaming atmosphere */
+  box-shadow: inset 0 0 40px rgba(0, 229, 255, 0.03);
+}
+
+/* Top-left concave cutout */
+.top-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 60px;
+  background: #14141f;
+  border-bottom-right-radius: 22px;
+  border-top-left-radius: 22px;
+  z-index: 2;
+  transition: 
+    width 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    height 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* Top-right concave cutout */
+.top-panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: #14141f;
+  border-bottom-left-radius: 22px;
+  border-top-right-radius: 22px;
+  z-index: 2;
+  transition: 
+    width 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    height 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* Bottom-center concave scoop */
+.panel-notch-scoop {
+  position: absolute;
+  bottom: -43px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 86px;
+  height: 86px;
+  background: #14141f;
+  border-radius: 50%;
+  z-index: 2;
+  transition: 
+    width 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    height 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    bottom 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    transform 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.badge {
+  position: absolute;
+  z-index: 5;
+  transition: 
+    top 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    left 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    right 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    bottom 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    transform 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* Top-left: theme toggle badge */
+.badge-tl {
+  top: 8px;
+  left: 8px;
+  width: 44px;
+  height: 44px;
+  background: #1e1e2e;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, background 0.3s ease, border 0.3s ease;
+  border: 1px solid rgba(0, 229, 255, 0.1);
+}
+
+.badge-tl:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.25);
+  border-color: rgba(0, 229, 255, 0.3);
+}
+
+.badge-logo {
+  width: 22px;
+  height: 22px;
+}
+
+/* Top-right: dark circle */
+.badge-tr {
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  background: #1e1e2e;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 229, 255, 0.08);
+}
+
+/* Center notch badge */
+.badge-center {
+  bottom: -29px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 58px;
+  height: 58px;
+  background: #1e1e2e;
+  border-radius: 50%;
+  z-index: 10;
+  border: 1px solid rgba(0, 229, 255, 0.1);
+}
+
+/* ============================================================
+   LAYOUT MORPHS FOR TOP PANEL, CUTOUTS, AND BADGES
+   ============================================================ */
+
+/* FEATURED MODE (was ABOUT): Prominent portrait top panel split */
+.layout-featured .top-panel {
+  flex: 0 0 56% !important;
+  border-radius: 22px;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.layout-featured .top-panel::before,
+.layout-featured .top-panel::after {
+  width: 60px !important;
+  height: 60px !important;
+  opacity: 1 !important;
+}
+
+.layout-featured .badge-tl {
+  top: 8px !important;
+  left: 8px !important;
+  transform: scale(1) !important;
+  opacity: 1 !important;
+}
+
+.layout-featured .badge-tr {
+  top: 8px !important;
+  right: 8px !important;
+  transform: scale(1) !important;
+  opacity: 1 !important;
+}
+
+.layout-featured .badge-center {
+  bottom: -29px !important;
+  left: 50% !important;
+  transform: translateX(-50%) scale(1) !important;
+  opacity: 1 !important;
+}
+
+.layout-featured .panel-notch-scoop {
+  bottom: -43px !important;
+  left: 50% !important;
+  transform: translateX(-50%) scale(1) !important;
+  opacity: 1 !important;
+}
+
+/* DISSOLVED MODES: Games, Studio, News, Community.
+   The top panel completely dissolves to 0. */
+.layout-games .top-panel,
+.layout-studio .top-panel,
+.layout-news .top-panel,
+.layout-community .top-panel {
+  flex: 0 0 0% !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none;
+}
+
+/* Dissolve all panel children and cutouts */
+.layout-games .top-panel::before, .layout-games .top-panel::after,
+.layout-studio .top-panel::before, .layout-studio .top-panel::after,
+.layout-news .top-panel::before, .layout-news .top-panel::after,
+.layout-community .top-panel::before, .layout-community .top-panel::after {
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+}
+
+.layout-games .badge-tl, .layout-games .badge-tr, .layout-games .badge-center, .layout-games .panel-notch-scoop,
+.layout-studio .badge-tl, .layout-studio .badge-tr, .layout-studio .badge-center, .layout-studio .panel-notch-scoop,
+.layout-news .badge-tl, .layout-news .badge-tr, .layout-news .badge-center, .layout-news .panel-notch-scoop,
+.layout-community .badge-tl, .layout-community .badge-tr, .layout-community .badge-center, .layout-community .panel-notch-scoop {
+  opacity: 0 !important;
+  transform: scale(0) !important;
+  pointer-events: none;
+}
+
+/* ============================================================
+   BOTTOM AREA — 3-COLUMN GRID
+   ============================================================ */
+
+.bottom-area {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  min-height: 0;
+}
+
+.col {
+  display: flex;
+  min-height: 0;
+}
+
+/* --- LEFT COLUMN --- */
+.col-left {
+  flex: 0 0 24%;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.pill {
+  background: #1e1e2e;
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.pill-wide {
+  width: 100%;
+  height: 18px;
+  transition: width 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.pill-medium {
+  width: 85%;
+  height: 18px;
+  transition: width 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.thin-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 85%;
+  flex-shrink: 0;
+  margin: 4px 0;
+  transition: width 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.thin-line {
+  height: 2.5px;
+  background: #1e1e2e;
+  border-radius: 1px;
+}
+
+.pill-button {
+  width: 60%;
+  height: 18px;
+  transition: width 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* Featured-specific pill sizes */
+.layout-featured .pill-wide {
+  width: 130%;
+}
+.layout-featured .pill-medium {
+  width: 105%;
+}
+.layout-featured .thin-lines {
+  width: 95%;
+}
+.layout-featured .pill-button {
+  width: 68%;
+}
+
+.circles-row {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  transition: 
+    flex-direction 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    gap 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    align-items 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e1e2e;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: 
+    width 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    height 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    border-radius 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    background 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    transform 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    box-shadow 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ============================================================
+   PREMIUM HUD NAVIGATION TAB BAR — Gaming Edition
+   ============================================================ */
+.hud-nav {
+  position: relative;
+  display: flex;
+  background: rgba(14, 14, 22, 0.65);
+  border: 1px solid rgba(0, 229, 255, 0.08);
+  padding: 4px;
+  border-radius: 30px;
+  gap: 6px;
+  z-index: 10;
+  backdrop-filter: blur(12px);
+  box-shadow: 
+    0 10px 30px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(0, 229, 255, 0.05),
+    0 0 20px rgba(0, 229, 255, 0.03);
+}
+
+.hud-btn {
+  background: transparent;
+  border: none;
+  color: #5a5a7a;
+  padding: 8px 20px;
+  font-family: "Orbitron", "Bruno Ace SC", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  outline: none;
+}
+
+.hud-btn:hover {
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.04);
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.hud-btn.active {
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: 
+    0 4px 12px rgba(0, 229, 255, 0.15),
+    0 0 0 1px rgba(0, 229, 255, 0.2),
+    inset 0 0 8px rgba(0, 229, 255, 0.05);
+  text-shadow: 0 0 16px rgba(0, 229, 255, 0.5);
+}
+
+/* ============================================================
+   MORPHING CARDS CONTAINER & WOW TRANSITIONS
+   ============================================================ */
+
+.morph-container {
+  flex: 1;
+  position: relative;
+  height: 100%;
+}
+
+/* Base Morph Card — Gaming Edition with neon accent glow */
+.morph-card {
+  position: absolute;
+  background: #1e1e2e;
+  border-radius: 14px;
+  --rx: 0deg;
+  --ry: 0deg;
+  transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: 
+    top 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+    left 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+    width 1.3s cubic-bezier(0.34, 1.25, 0.64, 1),
+    height 1.3s cubic-bezier(0.34, 1.25, 0.64, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    border-radius 1.4s cubic-bezier(0.76, 0, 0.24, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border 0.4s ease;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 229, 255, 0.04);
+  animation: borderGlow 6s infinite alternate ease-in-out;
+}
+
+@keyframes borderGlow {
+  0% {
+    border-color: rgba(0, 229, 255, 0.04);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  100% {
+    border-color: rgba(0, 229, 255, 0.1);
+    box-shadow: 
+      0 4px 20px rgba(0,0,0,0.35),
+      0 0 12px rgba(0, 229, 255, 0.04);
+  }
+}
+
+.morph-card:hover {
+  box-shadow: 
+    0 25px 50px rgba(0,0,0,0.5),
+    0 0 30px rgba(0, 229, 255, 0.12);
+  transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry)) scale3d(1.03, 1.03, 1.03) translateY(-6px);
+  border-color: rgba(0, 229, 255, 0.25);
+  z-index: 20 !important;
+}
+
+/* Card Content: fade in/out views */
+.card-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: 
+    opacity 0.25s ease-out, 
+    visibility 0.25s ease-out, 
+    transform 0.25s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* Left Column Shifting based on tabs */
+.col-left {
+  transition: flex 1.4s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.layout-studio .col-left {
+  flex: 0 0 16%;
+  opacity: 0.8;
+}
+
+/* Layout active classes — Gaming Tab Names */
+.layout-featured .featured-content,
+.layout-games .games-content,
+.layout-studio .studio-content,
+.layout-news .news-content,
+.layout-community .community-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0px);
+  transition: 
+    opacity 0.85s cubic-bezier(0.76, 0, 0.24, 1),
+    visibility 0.85s cubic-bezier(0.76, 0, 0.24, 1),
+    transform 0.85s cubic-bezier(0.76, 0, 0.24, 1);
+  transition-delay: 0.45s;
+}
+
+/* --- LAYOUT 1: FEATURED (was ABOUT) --- */
+
+.layout-featured .card-1 {
+  left: 0%;
+  width: 13.5%;
+  top: 52%;
+  height: 48%;
+}
+
+.layout-featured .card-2 {
+  left: 15.5%;
+  width: 13.5%;
+  top: 52%;
+  height: 48%;
+}
+
+.layout-featured .card-3 {
+  left: 31%;
+  width: 13.5%;
+  top: 52%;
+  height: 48%;
+}
+
+.layout-featured .card-4 {
+  left: 47%;
+  width: 53%;
+  top: 0%;
+  height: 47%;
+}
+
+.layout-featured .card-5 {
+  left: 47%;
+  width: 53%;
+  top: 53%;
+  height: 47%;
+}
+
+.layout-featured .card-6 {
+  left: -34%;
+  top: calc(100% - 28px);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+.layout-featured .card-7 {
+  left: calc(-34% + 36px);
+  top: calc(100% - 28px);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+.layout-featured .card-8 {
+  left: calc(-34% + 72px);
+  top: calc(100% - 28px);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+/* --- LAYOUT 2: GAMES (was SKILLS) --- */
+
+.layout-games .card-1 {
+  left: 0%;
+  width: 30%;
+  top: 0%;
+  height: 78%;
+}
+
+.layout-games .card-2 {
+  left: 33%;
+  width: 34%;
+  top: 0%;
+  height: 48%;
+}
+
+.layout-games .card-3 {
+  left: 33%;
+  width: 34%;
+  top: 52%;
+  height: 48%;
+}
+
+.layout-games .card-4 {
+  left: 70%;
+  width: 30%;
+  top: 0%;
+  height: 48%;
+}
+
+.layout-games .card-5 {
+  left: 70%;
+  width: 30%;
+  top: 52%;
+  height: 48%;
+}
+
+.layout-games .card-6 {
+  left: 0%;
+  width: 9%;
+  top: 82%;
+  height: 18%;
+  border-radius: 10px;
+}
+
+.layout-games .card-7 {
+  left: 10.5%;
+  width: 9%;
+  top: 82%;
+  height: 18%;
+  border-radius: 10px;
+}
+
+.layout-games .card-8 {
+  left: 21%;
+  width: 9%;
+  top: 82%;
+  height: 18%;
+  border-radius: 10px;
+}
+
+/* --- LAYOUT 3: STUDIO (was PROJECTS) --- */
+
+.layout-studio .card-1 {
+  left: 0%;
+  width: 48%;
+  top: 0%;
+  height: 100%;
+}
+
+.layout-studio .card-2 {
+  left: 51%;
+  width: 23%;
+  top: 0%;
+  height: 48%;
+}
+
+.layout-studio .card-3 {
+  left: 51%;
+  width: 23%;
+  top: 52%;
+  height: 48%;
+}
+
+.layout-studio .card-4 {
+  left: 51%;
+  width: 23%;
+  top: 52%;
+  height: 0%;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.layout-studio .card-5 {
+  left: 51%;
+  width: 23%;
+  top: 52%;
+  height: 0%;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.layout-studio .card-6 {
+  left: 76%;
+  width: 24%;
+  top: 0%;
+  height: 30%;
+  border-radius: 12px;
+}
+
+.layout-studio .card-7 {
+  left: 76%;
+  width: 24%;
+  top: 35%;
+  height: 30%;
+  border-radius: 12px;
+}
+
+.layout-studio .card-8 {
+  left: 76%;
+  width: 24%;
+  top: 70%;
+  height: 30%;
+  border-radius: 12px;
+}
+
+/* --- LAYOUT 4: NEWS (was DESIGN) --- */
+
+.layout-news .card-1 {
+  left: 0%;
+  width: 58%;
+  top: 0%;
+  height: 80%;
+}
+
+.layout-news .card-2 {
+  left: 61%;
+  width: 39%;
+  top: 0%;
+  height: 46%;
+}
+
+.layout-news .card-3 {
+  left: 61%;
+  width: 18%;
+  top: 52%;
+  height: 30%;
+}
+
+.layout-news .card-4 {
+  left: 81%;
+  width: 19%;
+  top: 52%;
+  height: 30%;
+}
+
+.layout-news .card-5 {
+  left: 81%;
+  width: 19%;
+  top: 52%;
+  height: 0%;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.layout-news .card-6 {
+  left: 0%;
+  width: 32%;
+  top: 83%;
+  height: 17%;
+  border-radius: 12px;
+}
+
+.layout-news .card-7 {
+  left: 34%;
+  width: 32%;
+  top: 83%;
+  height: 17%;
+  border-radius: 12px;
+}
+
+.layout-news .card-8 {
+  left: 68%;
+  width: 32%;
+  top: 83%;
+  height: 17%;
+  border-radius: 12px;
+}
+
+/* --- LAYOUT 5: COMMUNITY (was ACHIEVEMENTS) --- */
+
+.layout-community .card-1 {
+  left: 0%;
+  width: 100%;
+  top: 0%;
+  height: 18%;
+}
+
+.layout-community .card-2 {
+  left: 0%;
+  width: 31%;
+  top: 24%;
+  height: 44%;
+}
+
+.layout-community .card-3 {
+  left: 34.5%;
+  width: 31%;
+  top: 24%;
+  height: 44%;
+}
+
+.layout-community .card-4 {
+  left: 69%;
+  width: 31%;
+  top: 24%;
+  height: 44%;
+}
+
+.layout-community .card-5 {
+  left: 0%;
+  width: 100%;
+  top: 73%;
+  height: 0%;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.layout-community .card-6 {
+  left: 0%;
+  width: 31%;
+  top: 73%;
+  height: 27%;
+  border-radius: 12px;
+}
+
+.layout-community .card-7 {
+  left: 34.5%;
+  width: 31%;
+  top: 73%;
+  height: 27%;
+  border-radius: 12px;
+}
+
+.layout-community .card-8 {
+  left: 69%;
+  width: 31%;
+  top: 73%;
+  height: 27%;
+  border-radius: 12px;
+}
+
+/* ============================================================
+   CUSTOM HUD CONTENT DETAILS
+   ============================================================ */
+
+.project-spotlight,
+.design-spotlight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.spotlight-title {
+  font-family: "Orbitron", "Bruno Ace SC", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #00e5ff;
+  opacity: 0.85;
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.about-bio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.vertical-project {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  width: 100%;
+}
+
+.stat-value {
+  font-family: "Orbitron", "Bruno Ace SC", sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 1px;
+  opacity: 0.95;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
+}
+
+.timeline-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  padding: 0 8px;
+}
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+}
+
+.timeline-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, #00e5ff 0%, rgba(0, 229, 255, 0.1) 100%);
+  border-radius: 1px;
+  opacity: 0.7;
+}
+
+.achievements-details {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Mini badge text for platform icons */
+.mini-badge-text {
+  font-family: "Orbitron", "Bruno Ace SC", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #00e5ff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+
+/* Action pill text */
+.action-pill-text {
+  font-family: "Orbitron", "Bruno Ace SC", sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  color: #00e5ff;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+/* Medal / emoji icons in community cards */
+.medal-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));
+}
+
+/* Right dash group styling */
+.right-dash-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 0 12px;
+}
+
+.dash-short {
+  width: 30% !important;
+}
+
+.dash-long {
+  width: 70% !important;
+}
+
+/* ============================================================
+   GREY PLACEHOLDER DASHES — Gaming tinted
+   ============================================================ */
+
+.grey-dash {
+  width: 40%;
+  height: 5px;
+  background: #2a2a40;
+  border-radius: 3px;
+}
+
+/* ============================================================
+   RICH ABSTRACT LEFT PANEL & LAYOUT PILLS OVERRIDES
+   ============================================================ */
+
+/* --- GAMES MODE OVERRIDES (was SKILLS) --- */
+.layout-games .pill-wide {
+  width: 100%;
+}
+.layout-games .pill-medium {
+  width: 75%;
+}
+.layout-games .thin-lines {
+  width: 85%;
+}
+.layout-games .pill-button {
+  width: 50%;
+}
+
+/* --- STUDIO MODE OVERRIDES (was PROJECTS) --- */
+.layout-studio .pill-wide {
+  width: 85%;
+}
+.layout-studio .pill-medium {
+  width: 60%;
+}
+.layout-studio .thin-lines {
+  width: 75%;
+}
+.layout-studio .pill-button {
+  width: 45%;
+}
+
+/* --- NEWS MODE OVERRIDES (was DESIGN) --- */
+.layout-news .pill-wide {
+  width: 80%;
+  height: 22px;
+}
+.layout-news .pill-medium {
+  width: 40%;
+}
+.layout-news .thin-lines {
+  width: 90%;
+}
+.layout-news .pill-button {
+  width: 90%;
+}
+
+/* --- COMMUNITY MODE OVERRIDES (was ACHIEVEMENTS) --- */
+.layout-community .pill-wide {
+  width: 120% !important;
+  height: 18px !important;
+}
+.layout-community .pill-medium {
+  width: 100% !important;
+  height: 18px !important;
+}
+.layout-community .thin-lines {
+  width: 95% !important;
+}
+.layout-community .pill-button {
+  width: 75% !important;
+  height: 18px !important;
+}
+
+.achievements-extra-lines .thin-line {
+  height: 2.5px !important;
+  background: #1e1e2e !important;
+  border-radius: 1px !important;
+  margin-bottom: 5px !important;
+}
+
+/* ============================================================
+   ACTIVE PREMIUM LIGHT/DARK THEME SWITCHER — Gaming Edition
+   ============================================================ */
+
+/* Core page container light shift */
+.theme-light.page-container {
+  background: 
+    radial-gradient(ellipse at 80% 20%, rgba(255, 183, 0, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(120, 0, 255, 0.03) 0%, transparent 50%),
+    linear-gradient(135deg, transparent 55%, rgba(255, 183, 0, 0.08) 70%, rgba(255, 183, 0, 0.03) 85%, transparent 100%),
+    linear-gradient(180deg, #f0f0f5 0%, #dcdce5 100%);
+  color: #1a1a2e;
+}
+
+/* Light Card */
+.theme-light .card {
+  background-color: #ffffff;
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.06),
+    0 15px 35px rgba(0,0,0,0.03);
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Light Top Panel */
+.theme-light .top-panel {
+  background: #e8e8f0;
+  box-shadow: inset 0 0 40px rgba(255, 183, 0, 0.03);
+}
+
+/* Cutouts merge with white card in Light Theme */
+.theme-light .top-panel::before,
+.theme-light .top-panel::after,
+.theme-light .panel-notch-scoop {
+  background: #ffffff !important;
+}
+
+/* Light badges */
+.theme-light .badge-tl {
+  background: #f2f2f8;
+  border: 1px solid rgba(0,0,0,0.04);
+  box-shadow: 0 0 12px rgba(0,0,0,0.05);
+}
+
+.theme-light .badge-tl:hover {
+  box-shadow: 0 0 16px rgba(255, 183, 0, 0.2);
+  border-color: rgba(255, 183, 0, 0.3);
+}
+
+.theme-light .badge-tr {
+  background: #f2f2f8;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.theme-light .badge-logo circle {
+  stroke: #1a1a2e;
+}
+.theme-light .badge-logo circle[fill] {
+  fill: #ffb700 !important;
+}
+
+/* Light nested circle badge */
+.theme-light .badge-center {
+  background: #e8e8f0 !important;
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Light Pills */
+.theme-light .pill {
+  background: #e8e8f0;
+}
+
+.theme-light .thin-line {
+  background: #e8e8f0;
+}
+
+.theme-light .achievements-extra-lines .thin-line {
+  background: #e8e8f0 !important;
+}
+
+/* Light Morphing Cards */
+.theme-light .morph-card {
+  background: #f2f2f8;
+  border-color: rgba(0,0,0,0.04);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+.theme-light .morph-card:hover {
+  background: #ffffff;
+  border-color: rgba(255, 183, 0, 0.2);
+  box-shadow: 
+    0 15px 30px rgba(0,0,0,0.08),
+    0 0 20px rgba(255, 183, 0, 0.08);
+}
+
+/* Light card text coloring */
+.theme-light .spotlight-title {
+  color: #ffb700;
+  opacity: 0.85;
+  text-shadow: none;
+}
+
+.theme-light .stat-value {
+  color: #1a1a2e;
+  text-shadow: none;
+}
+
+.theme-light .mini-badge-text {
+  color: #ffb700;
+  text-shadow: none;
+}
+
+.theme-light .action-pill-text {
+  color: #ffb700;
+  text-shadow: none;
+}
+
+.theme-light .grey-dash {
+  background: #c5c5d0;
+}
+
+.theme-light .timeline-dot {
+  background: #ffb700;
+  box-shadow: 0 0 10px rgba(255, 183, 0, 0.4);
+}
+
+.theme-light .timeline-line {
+  background: linear-gradient(90deg, #ffb700 0%, rgba(255, 183, 0, 0.1) 100%);
+}
+
+/* Light HUD Nav */
+.theme-light .hud-nav {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 
+    0 10px 30px rgba(0,0,0,0.05),
+    inset 0 1px 2px rgba(255,255,255,0.8);
+}
+
+.theme-light .hud-btn {
+  color: #8a8a9a;
+}
+
+.theme-light .hud-btn:hover {
+  color: #ffb700;
+  background: rgba(255, 183, 0, 0.05);
+  text-shadow: none;
+}
+
+.theme-light .hud-btn.active {
+  color: #1a1a2e;
+  background: rgba(255, 183, 0, 0.12);
+  box-shadow: 
+    0 4px 12px rgba(255, 183, 0, 0.12),
+    0 0 0 1px rgba(255, 183, 0, 0.2);
+  text-shadow: none;
+}
+
+/* ============================================================
+   HERO PANEL OVERLAY & CONTENT
+   ============================================================ */
+
+.top-panel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 12, 0.3) 0%,
+    rgba(5, 5, 12, 0.5) 50%,
+    rgba(5, 5, 12, 0.85) 100%
+  );
+  border-radius: 22px;
+  display: flex;
+  align-items: flex-end;
+  padding: 30px 40px;
+  z-index: 1;
+}
+
+.hero-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hero-tag {
+  font-family: "Orbitron", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #00e5ff;
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+}
+
+.hero-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(24px, 4vw, 48px);
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #ffffff;
+  text-shadow: 0 0 40px rgba(0, 229, 255, 0.2);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.hero-tagline {
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: clamp(9px, 1.2vw, 12px);
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+/* ============================================================
+   PILL LABELS (text inside pills)
+   ============================================================ */
+
+.pill-label {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  overflow: hidden;
+}
+
+.pill-text {
+  font-family: "Orbitron", sans-serif;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: rgba(0, 229, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.theme-light .pill-text {
+  color: rgba(180, 140, 0, 0.7);
+}
+
+/* ============================================================
+   GAME TITLE CARD (Featured tab, Card 1)
+   ============================================================ */
+
+.game-title-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  gap: 4px;
+}
+
+.card-label {
+  font-family: "Orbitron", sans-serif;
+  font-size: 7px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: #00e5ff;
+  opacity: 0.7;
+}
+
+.card-game-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(14px, 2vw, 22px);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.card-genre-tag {
+  font-family: "Orbitron", sans-serif;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: rgba(0, 229, 255, 0.6);
+  background: rgba(0, 229, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+}
+
+/* ============================================================
+   GAME COVER CARDS (Games tab — background image cards)
+   ============================================================ */
+
+.game-cover-card {
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.game-cover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 12, 0.1) 0%,
+    rgba(5, 5, 12, 0.4) 50%,
+    rgba(5, 5, 12, 0.9) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+  gap: 3px;
+}
+
+.cover-genre {
+  font-family: "Orbitron", sans-serif;
+  font-size: 7px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: #00e5ff;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+}
+
+.cover-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(11px, 1.5vw, 18px);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 2px;
+  line-height: 1.1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.cover-rating {
+  font-family: "Orbitron", sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  color: #ffb700;
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   STAT BLOCKS (rating, year, player count, etc.)
+   ============================================================ */
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+}
+
+.stat-number {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(18px, 3vw, 36px);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(6px, 0.8vw, 9px);
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: rgba(0, 229, 255, 0.6);
+}
+
+.theme-light .stat-number {
+  color: #1a1a2e;
+  text-shadow: none;
+}
+
+.theme-light .stat-label {
+  color: rgba(180, 140, 0, 0.7);
+}
+
+/* ============================================================
+   DESCRIPTION CARDS
+   ============================================================ */
+
+.description-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+}
+
+.desc-text {
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: clamp(7px, 0.85vw, 11px);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+.theme-light .desc-text {
+  color: rgba(26, 26, 46, 0.65);
+}
+
+.platform-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.platform-badge {
+  font-family: "Orbitron", sans-serif;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+}
+
+.theme-light .platform-badge {
+  color: #b8860b;
+  background: rgba(255, 183, 0, 0.08);
+  border-color: rgba(255, 183, 0, 0.2);
+}
+
+/* ============================================================
+   CTA CARD (Buy Now)
+   ============================================================ */
+
+.cta-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.cta-price {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(16px, 2.5vw, 28px);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.cta-button {
+  font-family: "Orbitron", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #050508;
+  background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
+  border: none;
+  padding: 8px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 229, 255, 0.3);
+}
+
+.cta-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(0, 229, 255, 0.5);
+}
+
+.theme-light .cta-button {
+  background: linear-gradient(135deg, #ffb700 0%, #ff9500 100%);
+  color: #1a1a2e;
+  box-shadow: 0 4px 16px rgba(255, 183, 0, 0.3);
+}
+
+.theme-light .cta-button:hover {
+  box-shadow: 0 6px 24px rgba(255, 183, 0, 0.5);
+}
+
+.cta-sub {
+  font-family: "Orbitron", sans-serif;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: rgba(0, 229, 255, 0.5);
+}
+
+.theme-light .cta-sub {
+  color: rgba(180, 140, 0, 0.6);
+}
+
+.theme-light .cta-price {
+  color: #1a1a2e;
+}
+
+/* ============================================================
+   NEWS ARTICLE CARDS
+   ============================================================ */
+
+.news-article-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.news-compact {
+  justify-content: center;
+  gap: 6px;
+}
+
+.news-category {
+  font-family: "Orbitron", sans-serif;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+}
+
+.theme-light .news-category {
+  color: #b8860b;
+  background: rgba(255, 183, 0, 0.08);
+  border-color: rgba(255, 183, 0, 0.2);
+}
+
+.news-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(9px, 1.1vw, 14px);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.theme-light .news-title {
+  color: #1a1a2e;
+}
+
+.news-excerpt {
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: clamp(7px, 0.75vw, 10px);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.theme-light .news-excerpt {
+  color: rgba(26, 26, 46, 0.5);
+}
+
+.news-date {
+  font-family: "Orbitron", sans-serif;
+  font-size: 7px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  color: rgba(0, 229, 255, 0.4);
+  margin-top: auto;
+}
+
+.theme-light .news-date {
+  color: rgba(180, 140, 0, 0.5);
+}
+
+/* ============================================================
+   STUDIO STORY OVERLAY
+   ============================================================ */
+
+.studio-story-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 12, 0.5) 0%,
+    rgba(5, 5, 12, 0.8) 40%,
+    rgba(5, 5, 12, 0.95) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  gap: 8px;
+}
+
+.studio-story-text {
+  font-family: "Bruno Ace SC", sans-serif;
+  font-size: clamp(7px, 0.8vw, 10px);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+/* ============================================================
+   COMING SOON CARD
+   ============================================================ */
+
+.coming-soon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  gap: 8px;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(0, 229, 255, 0.02) 8px,
+    rgba(0, 229, 255, 0.02) 16px
+  );
+  border-radius: 14px;
+}
+
+.coming-title {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(12px, 1.6vw, 20px);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.coming-genre {
+  font-family: "Orbitron", sans-serif;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: rgba(0, 229, 255, 0.5);
+}
+
+.coming-status {
+  font-family: "Orbitron", sans-serif;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #ffb700;
+  background: rgba(255, 183, 0, 0.08);
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 183, 0, 0.2);
+  animation: statusPulse 2s infinite ease-in-out;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* ============================================================
+   BROWSE ALL CARD
+   ============================================================ */
+
+.browse-all-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+}
+
+.browse-count {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(12px, 1.5vw, 18px);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 2px;
+}
+
+.browse-label {
+  font-family: "Orbitron", sans-serif;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: rgba(0, 229, 255, 0.5);
+}
+
+/* ============================================================
+   COMMUNITY TIMELINE
+   ============================================================ */
+
+.community-timeline {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0;
+  padding: 0 12px;
+}
+
+.timeline-milestone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.timeline-label {
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(5px, 0.7vw, 8px);
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}
+
+.theme-light .timeline-label {
+  color: rgba(26, 26, 46, 0.5);
+}
+
+.timeline-connector {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.4), rgba(0, 229, 255, 0.1));
+  margin: 0 4px;
+  margin-bottom: 20px;
+}
+
+.theme-light .timeline-connector {
+  background: linear-gradient(90deg, rgba(255, 183, 0, 0.4), rgba(255, 183, 0, 0.1));
+}
+
+.active-dot {
+  background: #00e5ff !important;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.6), 0 0 4px rgba(0, 229, 255, 0.8) !important;
+  animation: dotPulse 2s infinite ease-in-out;
+}
+
+@keyframes dotPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 229, 255, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.8), 0 0 4px rgba(0, 229, 255, 1); }
+}
+
+.theme-light .active-dot {
+  background: #ffb700 !important;
+  box-shadow: 0 0 16px rgba(255, 183, 0, 0.6) !important;
+}
+
+/* ============================================================
+   PLATFORM ICONS (SVG icons in Featured circles)
+   ============================================================ */
+
+.platform-icon {
+  width: 16px;
+  height: 16px;
+  color: #00e5ff;
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.4));
+}
+
+.theme-light .platform-icon {
+  color: #ffb700;
+  filter: drop-shadow(0 0 6px rgba(255, 183, 0, 0.3));
+}
+
+/* ============================================================
+   LIGHT THEME — New Content Elements
+   ============================================================ */
+
+.theme-light .hero-tag {
+  color: #ffb700;
+  text-shadow: none;
+}
+
+.theme-light .hero-title {
+  text-shadow: none;
+}
+
+.theme-light .hero-tagline {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.theme-light .card-label {
+  color: #b8860b;
+}
+
+.theme-light .card-game-title {
+  color: #1a1a2e;
+}
+
+.theme-light .card-genre-tag {
+  color: #b8860b;
+  background: rgba(255, 183, 0, 0.08);
+  border-color: rgba(255, 183, 0, 0.2);
+}
+
+.theme-light .cover-genre {
+  color: #ffb700;
+}
+
+.theme-light .coming-title {
+  color: #1a1a2e;
+}
+
+.theme-light .coming-genre {
+  color: rgba(180, 140, 0, 0.6);
+}
+
+.theme-light .browse-count {
+  color: #1a1a2e;
+}
+
+.theme-light .browse-label {
+  color: rgba(180, 140, 0, 0.5);
+}
+
+/* ============================================================
+   RESPONSIVE SCALING
+   ============================================================ */
+
+@media (max-width: 700px) {
+  .card {
+    padding: 14px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+  
+  .top-panel {
+    border-radius: 14px;
+  }
+  
+  .top-panel::before,
+  .top-panel::after {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .panel-notch-scoop {
+    width: 100px;
+    height: 30px;
+  }
+  
+  .badge-tl {
+    width: 36px;
+    height: 36px;
+    top: 14px;
+    left: 14px;
+  }
+  
+  .badge-tr {
+    width: 34px;
+    height: 34px;
+    top: 16px;
+    right: 16px;
+  }
+  
+  .badge-center {
+    width: 52px;
+    height: 52px;
+    top: calc(55% + 14px);
+  }
+  
+  .badge-center::after {
+    width: 38px;
+    height: 38px;
+  }
+  
+  .dot {
+    width: 20px;
+    height: 20px;
+  }
+
+  .hero-title-group {
+    padding: 10px 16px;
+  }
+
+  .top-panel-overlay {
+    padding: 16px 20px;
+  }
+
+  .stat-number {
+    font-size: 20px;
+  }
+
+  .cta-button {
+    padding: 6px 16px;
+    font-size: 8px;
+  }
+}
+
