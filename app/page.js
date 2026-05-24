@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 /* ─────────── GAME DATA ─────────── */
 const GAMES = [
@@ -84,14 +84,160 @@ const COMMUNITY_STATS = {
   countriesReached: "140+",
 };
 
-/* ─────────── COMPONENT ─────────── */
+const TABS = ["featured", "games", "studio", "news", "community"];
+
+/* ─────────── ANIMATED COUNTER HOOK ─────────── */
+function useAnimatedCounter(target, isActive, duration = 1200) {
+  const [display, setDisplay] = useState(target);
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    // Parse the numeric part
+    const numMatch = target.match(/[\d.]+/);
+    if (!numMatch) { setDisplay(target); return; }
+    
+    const numVal = parseFloat(numMatch[0]);
+    const prefix = target.slice(0, numMatch.index);
+    const suffix = target.slice(numMatch.index + numMatch[0].length);
+    const hasDecimal = numMatch[0].includes(".");
+    const startTime = performance.now();
+    
+    let raf;
+    const animate = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = numVal * eased;
+      
+      if (hasDecimal) {
+        setDisplay(`${prefix}${current.toFixed(1)}${suffix}`);
+      } else {
+        setDisplay(`${prefix}${Math.round(current)}${suffix}`);
+      }
+      
+      if (progress < 1) {
+        raf = requestAnimationFrame(animate);
+      } else {
+        setDisplay(target);
+      }
+    };
+    
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [target, isActive, duration]);
+
+  return display;
+}
+
+/* ─────────── ANIMATED STAT COMPONENT ─────────── */
+function AnimatedStat({ number, label, isActive }) {
+  const animated = useAnimatedCounter(number, isActive);
+  return (
+    <div className="stat-block">
+      <span className="stat-number">{animated}</span>
+      <span className="stat-label">{label}</span>
+    </div>
+  );
+}
+
+/* ─────────── FLOATING PARTICLES ─────────── */
+function FloatingParticles() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    // Create particles
+    const particles = Array.from({ length: 40 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 2 + 0.5,
+      opacity: Math.random() * 0.4 + 0.1,
+      pulseSpeed: Math.random() * 0.02 + 0.005,
+      pulseOffset: Math.random() * Math.PI * 2,
+    }));
+
+    const draw = (time) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Wrap around edges
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        const pulse = Math.sin(time * p.pulseSpeed + p.pulseOffset) * 0.5 + 0.5;
+        const alpha = p.opacity * (0.5 + pulse * 0.5);
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 229, 255, ${alpha})`;
+        ctx.fill();
+
+        // Glow effect
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 229, 255, ${alpha * 0.1})`;
+        ctx.fill();
+      });
+
+      // Draw connection lines between nearby particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(0, 229, 255, ${0.03 * (1 - dist / 150)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    animId = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="particle-canvas" />;
+}
+
+/* ─────────── MAIN COMPONENT ─────────── */
 export default function Home() {
   const [currentTab, setCurrentTab] = useState("featured");
   const [isDark, setIsDark] = useState(true);
   const [isFlipping, setIsFlipping] = useState(false);
   const [introPhase, setIntroPhase] = useState("text");
   const prevTabRef = useRef(currentTab);
-  const featuredGame = GAMES[0]; // Voidborne is the featured game
+  const featuredGame = GAMES[0];
 
   useEffect(() => {
     const t1 = setTimeout(() => setIntroPhase("shrink"), 1200);
@@ -108,6 +254,22 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [currentTab]);
+
+  // Keyboard navigation: left/right arrows to switch tabs
+  const handleKeyDown = useCallback((e) => {
+    if (introPhase !== "done") return;
+    const idx = TABS.indexOf(currentTab);
+    if (e.key === "ArrowRight" && idx < TABS.length - 1) {
+      setCurrentTab(TABS[idx + 1]);
+    } else if (e.key === "ArrowLeft" && idx > 0) {
+      setCurrentTab(TABS[idx - 1]);
+    }
+  }, [currentTab, introPhase]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   const handleMouseMove = (e) => {
     const card = e.currentTarget;
@@ -130,6 +292,9 @@ export default function Home() {
 
   return (
     <>
+      {/* Floating ambient particles */}
+      <FloatingParticles />
+
       {/* ===== CINEMATIC INTRO SPLASH ===== */}
       {introPhase !== "done" && (
         <div className={`intro-overlay ${
@@ -146,12 +311,13 @@ export default function Home() {
     <div className={`page-container theme-${isDark ? "dark" : "light"}${introPhase !== "done" ? " site-hidden" : " site-revealed"}`}>
       {/* Floating Premium HUD Navigation */}
       <div className="hud-nav">
-        {["featured", "games", "studio", "news", "community"].map((tab) => (
+        {TABS.map((tab) => (
           <button
             key={tab}
             id={`nav-${tab}`}
             className={`hud-btn ${currentTab === tab ? "active" : ""}`}
             onClick={() => setCurrentTab(tab)}
+            aria-label={`Navigate to ${tab}`}
           >
             {tab.toUpperCase()}
           </button>
@@ -173,16 +339,25 @@ export default function Home() {
             </div>
 
             {/* Theme toggle badge */}
-            <div className="badge badge-tl" onClick={() => setIsDark(!isDark)} title="Toggle Theme">
+            <div className="badge badge-tl" onClick={() => setIsDark(!isDark)} title="Toggle Theme" role="button" aria-label="Toggle dark/light theme">
               <svg className="badge-logo" viewBox="0 0 24 24" fill="none" stroke="white">
                 <circle cx="12" cy="12" r="7" stroke="white" strokeWidth="2.2" strokeDasharray="3 2" />
                 <circle cx="12" cy="12" r="3" fill="white" />
               </svg>
             </div>
 
-            <div className="badge badge-tr"></div>
+            {/* Top-right: Online status indicator */}
+            <div className="badge badge-tr" title="Online">
+              <span className="online-dot"></span>
+            </div>
+
             <div className="panel-notch-scoop"></div>
-            <div className="badge badge-center"></div>
+            <div className="badge badge-center">
+              <svg className="eclipse-logo" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="8" stroke="rgba(0,229,255,0.5)" strokeWidth="1.5" />
+                <circle cx="14" cy="12" r="6" fill="rgba(0,229,255,0.15)" />
+              </svg>
+            </div>
           </div>
 
           {/* ===== BOTTOM AREA ===== */}
@@ -223,7 +398,6 @@ export default function Home() {
               
               {/* ── CARD 1 ── */}
               <div className="morph-card card-1" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
-                {/* FEATURED: Game title showcase */}
                 <div className="card-content featured-content">
                   <div className="game-title-card">
                     <span className="card-label">FEATURED</span>
@@ -231,7 +405,6 @@ export default function Home() {
                     <span className="card-genre-tag">{featuredGame.genre}</span>
                   </div>
                 </div>
-                {/* GAMES: Voidborne cover */}
                 <div className="card-content games-content game-cover-card" style={{ backgroundImage: `url(${GAMES[0].image})` }}>
                   <div className="game-cover-overlay">
                     <span className="cover-genre">{GAMES[0].genre}</span>
@@ -239,14 +412,12 @@ export default function Home() {
                     <span className="cover-rating">★ {GAMES[0].rating}</span>
                   </div>
                 </div>
-                {/* STUDIO: Studio story */}
                 <div className="card-content studio-content" style={{ backgroundImage: "url(/images/studio.png)", backgroundSize: "cover", backgroundPosition: "center" }}>
                   <div className="studio-story-overlay">
                     <span className="card-label">OUR STORY</span>
                     <p className="studio-story-text">Founded in 2019 by a team of passionate gamers, Eclipse Studios set out with one mission: create worlds that players never want to leave. From our first prototype to millions of players worldwide — we&apos;re just getting started.</p>
                   </div>
                 </div>
-                {/* NEWS: Featured article */}
                 <div className="card-content news-content">
                   <div className="news-article-card">
                     <span className="news-category">{NEWS_ITEMS[0].category}</span>
@@ -255,7 +426,6 @@ export default function Home() {
                     <span className="news-date">{NEWS_ITEMS[0].date}</span>
                   </div>
                 </div>
-                {/* COMMUNITY: Timeline banner */}
                 <div className="card-content community-content">
                   <div className="community-timeline">
                     <div className="timeline-milestone">
@@ -279,10 +449,7 @@ export default function Home() {
               {/* ── CARD 2 ── */}
               <div className="morph-card card-2" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
                 <div className="card-content featured-content">
-                  <div className="stat-block">
-                    <span className="stat-number">{featuredGame.rating}</span>
-                    <span className="stat-label">RATING</span>
-                  </div>
+                  <AnimatedStat number={featuredGame.rating} label="RATING" isActive={currentTab === "featured"} />
                 </div>
                 <div className="card-content games-content game-cover-card" style={{ backgroundImage: `url(${GAMES[1].image})` }}>
                   <div className="game-cover-overlay">
@@ -292,10 +459,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="card-content studio-content">
-                  <div className="stat-block">
-                    <span className="stat-number">25+</span>
-                    <span className="stat-label">DEVELOPERS</span>
-                  </div>
+                  <AnimatedStat number="25+" label="DEVELOPERS" isActive={currentTab === "studio"} />
                 </div>
                 <div className="card-content news-content">
                   <div className="news-article-card news-compact">
@@ -305,20 +469,14 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="card-content community-content">
-                  <div className="stat-block">
-                    <span className="stat-number">{COMMUNITY_STATS.activePlayers}</span>
-                    <span className="stat-label">ACTIVE PLAYERS</span>
-                  </div>
+                  <AnimatedStat number={COMMUNITY_STATS.activePlayers} label="ACTIVE PLAYERS" isActive={currentTab === "community"} />
                 </div>
               </div>
 
               {/* ── CARD 3 ── */}
               <div className="morph-card card-3" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
                 <div className="card-content featured-content">
-                  <div className="stat-block">
-                    <span className="stat-number">{featuredGame.year}</span>
-                    <span className="stat-label">RELEASE YEAR</span>
-                  </div>
+                  <AnimatedStat number={featuredGame.year} label="RELEASE YEAR" isActive={currentTab === "featured"} />
                 </div>
                 <div className="card-content games-content game-cover-card" style={{ backgroundImage: `url(${GAMES[2].image})` }}>
                   <div className="game-cover-overlay">
@@ -328,10 +486,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="card-content studio-content">
-                  <div className="stat-block">
-                    <span className="stat-number">3</span>
-                    <span className="stat-label">TITLES SHIPPED</span>
-                  </div>
+                  <AnimatedStat number="3" label="TITLES SHIPPED" isActive={currentTab === "studio"} />
                 </div>
                 <div className="card-content news-content">
                   <div className="news-article-card news-compact">
@@ -341,10 +496,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="card-content community-content">
-                  <div className="stat-block">
-                    <span className="stat-number">{COMMUNITY_STATS.avgRating}★</span>
-                    <span className="stat-label">AVG RATING</span>
-                  </div>
+                  <AnimatedStat number={COMMUNITY_STATS.avgRating + "★"} label="AVG RATING" isActive={currentTab === "community"} />
                 </div>
               </div>
 
@@ -381,10 +533,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="card-content community-content">
-                  <div className="stat-block">
-                    <span className="stat-number">{COMMUNITY_STATS.copiesSold}</span>
-                    <span className="stat-label">COPIES SOLD</span>
-                  </div>
+                  <AnimatedStat number={COMMUNITY_STATS.copiesSold} label="COPIES SOLD" isActive={currentTab === "community"} />
                 </div>
               </div>
 
@@ -393,7 +542,7 @@ export default function Home() {
                 <div className="card-content featured-content">
                   <div className="cta-card">
                     <span className="cta-price">{featuredGame.price}</span>
-                    <button className="cta-button">BUY NOW</button>
+                    <button className="cta-button" id="buy-now-btn">BUY NOW</button>
                     <span className="cta-sub">{featuredGame.players}</span>
                   </div>
                 </div>
@@ -416,10 +565,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="card-content community-content">
-                  <div className="stat-block">
-                    <span className="stat-number">{COMMUNITY_STATS.countriesReached}</span>
-                    <span className="stat-label">COUNTRIES</span>
-                  </div>
+                  <AnimatedStat number={COMMUNITY_STATS.countriesReached} label="COUNTRIES" isActive={currentTab === "community"} />
                 </div>
               </div>
 
@@ -485,6 +631,26 @@ export default function Home() {
 
         </div>
       </div>
+
+      {/* ===== FOOTER ===== */}
+      <footer className="site-footer" id="footer">
+        <div className="footer-content">
+          <div className="footer-brand">
+            <span className="footer-logo">ECLIPSE STUDIOS</span>
+            <span className="footer-tagline">Forging New Worlds</span>
+          </div>
+          <div className="footer-links">
+            <a href="#" className="footer-link" aria-label="Discord">DISCORD</a>
+            <a href="#" className="footer-link" aria-label="Twitter">TWITTER</a>
+            <a href="#" className="footer-link" aria-label="YouTube">YOUTUBE</a>
+            <a href="#" className="footer-link" aria-label="Steam">STEAM</a>
+          </div>
+          <div className="footer-legal">
+            <span className="footer-copyright">© 2026 Eclipse Studios. All rights reserved.</span>
+            <span className="footer-nav-hint">← → Arrow keys to navigate</span>
+          </div>
+        </div>
+      </footer>
     </div>
     </>
   );
